@@ -28,6 +28,7 @@ isce.azimuthLooks       = 20
 isce.rangeLooks         = 8
 isce.maxTempBaseline    = 1800
 isce.maxPerpBaseline    = 1800
+isce.masterDate         = 20080212
 isce.unwrapMethod       = snaphu
 isce.filtStrength       = 0.5
 isce.applyWaterMask     = yes
@@ -113,13 +114,14 @@ def prepare_ALOS(iDict):
 
 def prepare_stack(iDict):
     cmd = ('stackStripMap.py -W interferogram -s ./SLC -d {d} -u {u} -f {f} '
-           ' -t {t} -b {b} -a {a} -r {r}').format(d=iDict['demFile'],
-                                                  u=iDict['unwrapMethod'],
-                                                  f=iDict['filtStrength'],
-                                                  t=iDict['maxTempBaseline'],
-                                                  b=iDict['maxPerpBaseline'],
-                                                  a=iDict['azimuthLooks'],
-                                                  r=iDict['rangeLooks'])
+           ' -t {t} -b {b} -a {a} -r {r} -m {m}').format(d=iDict['demFile'],
+                                                         u=iDict['unwrapMethod'],
+                                                         f=iDict['filtStrength'],
+                                                         t=iDict['maxTempBaseline'],
+                                                         b=iDict['maxPerpBaseline'],
+                                                         a=iDict['azimuthLooks'],
+                                                         r=iDict['rangeLooks'],
+                                                         m=iDict['masterDate'])
     if iDict['applyWaterMask']:
         cmd += ' --applyWaterMask'
     print(cmd)
