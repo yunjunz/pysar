@@ -1,11 +1,14 @@
-We support output geocoded displacement time-series product into [HDF-EOS5](http://hdfeos.org) format via `save_hdfeos5.py`. This is designed to easily share the InSAR time-series product to the broader community.
+We support output geocoded displacement time-series and velocity product into [HDF-EOS5](http://hdfeos.org) format via `save_hdfeos5.py`. This is designed to easily share the InSAR time-series and velocity products to the broader community.
 
 ```bash
 save_hdfeos5.py geo_timeseries_ERA5_ramp_demErr.h5 --tc geo_temporalCoherence.h5 --asc geo_avgSpatialCoh.h5 -m geo_maskTempCoh.h5 -g geo_geometryRadar.h5
 save_hdfeos5.py timeseries_ERA5_ramp_demErr.h5     --tc temporalCoherence.h5     --asc avgSpatialCoh.h5     -m maskTempCoh.h5     -g inputs/geometryGeo.h5
+save_hdfeos5.py velocity.h5                        --tc temporalCoherence.h5     --asc avgSpatialCoh.h5     -m maskTempCoh.h5     -g inputs/geometryGeo.h5
 ```
 
 ### 1. File structure ###
+
+#### 1.1 Time-series
 
 ```
 /                             Root level group
@@ -27,6 +30,28 @@ Attributes                    metadata in dict
         /shadowMask           2D array of bool    in size of (   l, w).           (optional)
         /waterMask            2D array of bool    in size of (   l, w).           (optional)
         /bperp                3D array of float32 in size of (n, l, w) in meter.  (optional)
+```
+
+#### 1.2 Velocity
+
+```
+/                             Root level group
+Attributes                    metadata in dict
+/HDFEOS/GRIDS/velocity        velocity group
+    /observation
+        /velocity             2D array of float32 in size of (   l, w) in meter/year
+        /velocityStd          2D array of float32 in size of (   l, w) in meter/year
+    /quality
+        /mask                 2D array of bool_   in size of (   l, w).
+        /temporalCoherence    2D array of float32 in size of (   l, w).
+        /avgSpatialCoherence  2D array of float32 in size of (   l, w).
+    /geometry
+        /height               2D array of float32 in size of (   l, w) in meter.
+        /incidenceAngle       2D array of float32 in size of (   l, w) in degree.
+        /slantRangeDistance   2D array of float32 in size of (   l, w) in meter.
+        /azimuthAngle         2D array of float32 in size of (   l, w) in degree. (optional)
+        /shadowMask           2D array of bool    in size of (   l, w).           (optional)
+        /waterMask            2D array of bool    in size of (   l, w).           (optional)
 ```
 
 ### 2. Metadata
@@ -69,12 +94,13 @@ The following metadata requires manual specification in the custom template file
 
 Inherited from [UNAVCO InSAR Product Archive](https://winsar.unavco.org/insar/) ([format specification](https://docs.google.com/document/d/1fm6RY8aL4hhRa88M9cd_Ejh6OL3YfibfjN1UQ7TWsmI/edit?usp=sharing)), we use the filename convention below:
 
-&lt;SAT>\_&lt;SW>\_&lt;RELORB>\_&lt;FRAME1>(\_&lt;FRAME2>)\_&lt;DATE1>\_&lt;DATE2>(\_&lt;SUB>).he5
+&lt;TYPE>\_&lt;SAT>\_&lt;SW>\_&lt;RELORB>\_&lt;FRAME1>(\_&lt;FRAME2>)\_&lt;DATE1>\_&lt;DATE2>(\_&lt;SUB>).he5
 
 E.g. S1_IW12_128_0593_0597_20141213_20170928.he5
 
   | Items     | Descriptions | Values |
   | --------- | ------------ | -------|
+  | &lt;TYPE>   | File type | TS, VEL |
   | &lt;SAT>    | Mission name | ALOS, ALOS2, CSK, ENV, ERS, JERS, NISAR, RS1, RS2, S1, TSX, UAV |
   | &lt;SW>     | Beam mode with swath number   | SM2 (for ENV), IW3 (for S1) |
   | &lt;RELORB> | Relative orbit (track) number | 3 digits with zero padding  |
