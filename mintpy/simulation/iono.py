@@ -2,7 +2,7 @@
 ############################################################
 # Program is part of MintPy                                #
 # Copyright (c) 2013, Zhang Yunjun, Heresh Fattahi         #
-# Author: Zhang Yunjun, Feb 2020                           #
+# Author: Zhang Yunjun, Heresh Fattahi, Feb 2020           #
 ############################################################
 # Useful links:
 #   IGS (NASA): https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/atmospheric_products.html
@@ -33,6 +33,19 @@ SAR_BAND = {
     'X' : 9.65e9,   # TerraSAR-X
     'Ka': 35.75e9,  # SWOT
 }
+
+
+######################## Ionospheric Azimuth Shift #############################
+def azimuth_tec_gradient2shift(tec_grad, meta, range_dist):
+    """Convert the TEC gradient in azimuth direction to azimuth pixel / Doppler shift.
+
+    Reference: Yunjun, Z., Fattahi, H., et al. (2022, in prep)
+
+    Parameters: tec_grad - float or 2D np.ndarray in size of (num_date, num_pts)
+                           VTEC gradient in azimuth direction in
+    """
+
+    return
 
 
 ######################## Ionospheric Mapping Functions #########################
@@ -203,6 +216,9 @@ def lalo_ground2iono(lat, lon, inc_angle, az_angle=None, head_angle=None, iono_h
     if az_angle is None:
         raise ValueError('az_angle can not be None!')
 
+    # In spherical coordinate system, given the starting lat/lon, angular distance and azimuth angle
+    #   calculate the ending lat/lon.
+    #
     # option 1 - spherical_distance
     # link:
     #   https://gis.stackexchange.com/questions/5821 [there is a typo there]
