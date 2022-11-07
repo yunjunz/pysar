@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  test:
+  install_and_test:
     docker:
       - image: ubuntu:bionic
         environment:
@@ -84,6 +84,6 @@ jobs:
 
 workflows:
   version: 2
-  test:
+  unit-n-workflow-tests:
     jobs:
-      - test
+      - install_and_test
