@@ -467,6 +467,7 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
     poly_deg   = model['polynomial']
     num_period = len(model['periodic'])
     num_step   = len(model['stepDate'])
+    num_pline  = len(model['polyline'])
     num_exp    = sum(len(val) for key, val in model['exp'].items())
 
     # init output
@@ -487,6 +488,7 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
             mask = mask.flatten()
 
     # time func 1 - polynomial
+    p0 = 0
     for i in range(poly_deg+1):
         # dataset name
         if i == 0:
@@ -504,8 +506,8 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
 
         # assign ds_dict
         if m is not None:
-            ds_dict[dsName] = m[i, :]
-            ds_dict[dsName+'Std'] = m_std[i, :]
+            ds_dict[dsName] = m[p0 + i, :]
+            ds_dict[dsName+'Std'] = m_std[p0 + i, :]
 
         # assign ds_name/unit_dict
         ds_name_dict[dsName] = [DATA_TYPE, ds_shape, None]
@@ -514,7 +516,7 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
         ds_unit_dict[dsName+'Std'] = unit
 
     # time func 2 - periodic
-    p0 = poly_deg + 1
+    p0 += poly_deg + 1
     for i in range(num_period):
         # dataset name
         period = model['periodic'][i]
@@ -549,7 +551,7 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
         ds_unit_dict[dsNames[1]] = 'radian'
 
     # time func 3 - step
-    p0 = (poly_deg + 1) + (2 * num_period)
+    p0 += 2 * num_period
     for i in range(num_step):
         # dataset name
         dsName = 'step{}'.format(model['stepDate'][i])
@@ -565,8 +567,25 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
         ds_name_dict[dsName+'Std'] = [DATA_TYPE, ds_shape, None]
         ds_unit_dict[dsName+'Std'] = 'm'
 
-    # time func 4 - exponential
-    p0 = (poly_deg + 1) + (2 * num_period) + (num_step)
+    # time func 4 - polyline
+    p0 += num_step
+    for i in range(num_pline):
+        # dataset name
+        dsName = 'addVelocity{}'.format(model['polyline'][i])
+
+        # assign ds_dict
+        if m is not None:
+            ds_dict[dsName] = m[p0+i, :]
+            ds_dict[dsName+'Std'] = m_std[p0+i, :]
+
+        # assign ds_name/unit_dict
+        ds_name_dict[dsName] = [DATA_TYPE, ds_shape, None]
+        ds_unit_dict[dsName] = 'm/yr'
+        ds_name_dict[dsName+'Std'] = [DATA_TYPE, ds_shape, None]
+        ds_unit_dict[dsName+'Std'] = 'm/yr'
+
+    # time func 5 - exponential
+    p0 += num_pline
     i = 0
     for exp_onset in model['exp'].keys():
         for exp_tau in model['exp'][exp_onset]:
@@ -587,8 +606,8 @@ def model2hdf5_dataset(model, m=None, m_std=None, mask=None, ds_shape=None, resi
             # loop because each onset_time could have multiple char_time
             i += 1
 
-    # time func 5 - logarithmic
-    p0 = (poly_deg + 1) + (2 * num_period) + (num_step) + (num_exp)
+    # time func 6 - logarithmic
+    p0 += num_exp
     i = 0
     for log_onset in model['log'].keys():
         for log_tau in model['log'][log_onset]:

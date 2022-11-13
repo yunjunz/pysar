@@ -429,6 +429,11 @@ def add_timefunc_argument(parser):
                             '--step 20061014                        # coseismic step  at 2006-10-14T00:00\n'
                             '--step 20110311 20120928T1733          # coseismic steps at 2011-03-11T00:00 and 2012-09-28T17:33\n')
 
+    model.add_argument('--polyline', dest='polyline', type=str, nargs='+', default=[],
+                       help='polyline segment(s) starting at YYYYMMDD (default: %(default)s). E.g.:\n'
+                            '--polyline 20190101                    # extra velocity   since 2019-01-01T00:00\n'
+                            '--polyline 20190101 20200501T1725      # extra velocities since 2019-01-01T00:00 and 2020-05-01T17:25\n')
+
     model.add_argument('--exp', '--exponential', dest='exp', type=str, nargs='+', action='append', default=[],
                        help='exponential function(s) defined by onset time(s) and characteristic time(s) tau in days (default: %(default)s). E.g.:\n'
                             '--exp  20181026 60                     # one exp w/ onset at 2018-10-26       w/ tau=60  days\n'
