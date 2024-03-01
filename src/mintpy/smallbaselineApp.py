@@ -698,32 +698,6 @@ class TimeSeriesAnalysis:
             print('No topographic residual correction.')
 
 
-    def run_residual_phase_rms(self, step_name):
-        """Noise evaluation based on the phase residual."""
-        res_file = 'timeseriesResidual.h5'
-        if os.path.isfile(res_file):
-            iargs = [res_file, '-t', self.templateFile]
-            print('\ntimeseries_rms.py', ' '.join(iargs))
-            import mintpy.cli.timeseries_rms
-            mintpy.cli.timeseries_rms.main(iargs)
-        else:
-            print('No residual phase file found! Skip residual RMS analysis.')
-
-
-    def run_reference_date(self, step_name):
-        """Change reference date for all time-series files (optional)."""
-        if self.template['mintpy.reference.date']:
-            iargs = ['-t', self.templateFile]
-            in_files = self.get_timeseries_filename(self.template, self.workDir)[step_name]['input']
-            for in_file in in_files:
-                iargs += [in_file]
-            print('\nreference_date.py', ' '.join(iargs))
-            import mintpy.cli.reference_date
-            mintpy.cli.reference_date.main(iargs)
-        else:
-            print('No reference date change.')
-
-
     def run_timeseries2velocity(self, step_name):
         """Estimate average velocity from displacement time-series"""
         ts_file = self.get_timeseries_filename(self.template, self.workDir)[step_name]['input']
@@ -748,6 +722,32 @@ class TimeSeriesAnalysis:
             iargs += ['--ref-date', atr['REF_DATE'], '--ref-yx', atr['REF_Y'], atr['REF_X']]
             print('\ntimeseries2velocity.py', ' '.join(iargs))
             mintpy.cli.timeseries2velocity.main(iargs)
+
+
+    def run_residual_phase_rms(self, step_name):
+        """Noise evaluation based on the phase residual."""
+        res_file = 'timeseriesResidual.h5'
+        if os.path.isfile(res_file):
+            iargs = [res_file, '-t', self.templateFile]
+            print('\ntimeseries_rms.py', ' '.join(iargs))
+            import mintpy.cli.timeseries_rms
+            mintpy.cli.timeseries_rms.main(iargs)
+        else:
+            print('No residual phase file found! Skip residual RMS analysis.')
+
+
+    def run_reference_date(self, step_name):
+        """Change reference date for all time-series files (optional)."""
+        if self.template['mintpy.reference.date']:
+            iargs = ['-t', self.templateFile]
+            in_files = self.get_timeseries_filename(self.template, self.workDir)[step_name]['input']
+            for in_file in in_files:
+                iargs += [in_file]
+            print('\nreference_date.py', ' '.join(iargs))
+            import mintpy.cli.reference_date
+            mintpy.cli.reference_date.main(iargs)
+        else:
+            print('No reference date change.')
 
 
     def run_geocode(self, step_name):
@@ -903,14 +903,14 @@ class TimeSeriesAnalysis:
             elif sname == 'correct_topography':
                 self.run_topographic_residual_correction(sname)
 
+            elif sname == 'velocity':
+                self.run_timeseries2velocity(sname)
+
             elif sname == 'residual_RMS':
                 self.run_residual_phase_rms(sname)
 
             elif sname == 'reference_date':
                 self.run_reference_date(sname)
-
-            elif sname == 'velocity':
-                self.run_timeseries2velocity(sname)
 
             elif sname == 'geocode':
                 self.run_geocode(sname)
