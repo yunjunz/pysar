@@ -125,6 +125,9 @@ def cmd_line_parse(iargs = None):
     parser = create_parser()
     inps = parser.parse_args(args=iargs)
 
+    # import
+    from mintpy.utils import utils1 as ut
+
     # default: multilook options
     iDict = vars(inps)
     iDict['xstep'] = int(iDict.get('xstep', 1))
@@ -144,15 +147,27 @@ def cmd_line_parse(iargs = None):
         inps.unwFile      = os.path.join(inps.stackDir, os.path.basename(inps.unwFile))
         inps.connCompFile = os.path.join(inps.stackDir, os.path.basename(inps.connCompFile))
 
+    # check: update mode and existence of input/output files
+    # skip re-loading if 1) some input files do not exist AND 2) output files exists and are readable
+    inps.run_or_skip = 'run'
+    required_keys = ['unwFile', 'corFile', 'demFile', 'incAngleFile']
+    missing_keys = [key for key in required_keys if not ut.get_file_list(iDict[key])]
+    if inps.updateMode and missing_keys and ut.run_or_skip(inps.outfile, readable=True) == 'skip':
+        msg = '\nWARNING: required input files do not exist, however, '
+        msg += 'all output files exist, thus, skip re-loading and continue.'
+        msg += '\n    Missing required input files:'
+        for key in missing_keys:
+            msg += f'\n        mintpy.load.{key:<12} = {iDict[key]}'
+        msg += f'\n    Output files: {inps.outfile}\n'
+        print(msg)
+        inps.run_or_skip = 'skip'
+        return inps
+
     # check: all options end with "File"
-    # translate wildcard path input with search result
-    # if not exist, raise error for required datasets
-    #               set to None for the other datasets
+    # translate wildcard path input with search result if exist, otherwise, set to None
     print('search input data file info:')
     ds_keys = [key for key in list(iDict.keys()) if key.endswith('File')]
-    required_ds_keys = ['unwFile', 'corFile', 'demFile', 'incAngleFile']
     max_digit = max(len(i) for i in ds_keys)
-
     for key in ds_keys:
         # search for wildcard pattern
         fnames = glob.glob(iDict[key]) if iDict[key] else []
@@ -223,6 +238,8 @@ def read_template2inps(template_file, inps):
 def main(iargs=None):
     # parse
     inps = cmd_line_parse(iargs)
+    if inps.run_or_skip == 'skip':
+        return
 
     # import
     from mintpy.prep_aria import load_aria
