@@ -1195,7 +1195,12 @@ class ifgramStack:
         # to avoid the abnormal result as shown in https://github.com/insarlab/MintPy/pull/1063
         # This may be caused by the phase stitching during product preparation via ARIA-tools,
         # which could have broken the temporal consistency of the native unwrapped phase.
-        processor = self.metadata.get('mintpy.load.processor', 'isce')
+        processor = 'isce'
+        keys = ['mintpy.load.processor', 'PROCESSOR']
+        for key in keys:
+            if key in self.metadata.keys() and self.metadata[key]:
+                processor = self.metadata[key]
+                break
         if ds_name == 'unwrapPhase' and processor in ['aria']:
             print(f'apply spatial referencing to {processor} products')
             ref_phase = self.get_reference_phase(dropIfgram=False)
