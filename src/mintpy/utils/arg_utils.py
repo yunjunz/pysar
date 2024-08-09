@@ -347,6 +347,10 @@ def add_map_argument(parser):
                       metavar='NUM', type=float, default=1,
                       help='Coastline linewidth (default: %(default)s).')
 
+    # river
+    mapg.add_argument('--river', dest='river', type=str, choices={'10m', '50m', '110m'},
+                      help='Draw river with specified resolution (default: %(default)s).\n')
+
     # faultline
     mapg.add_argument('--faultline', dest='faultline_file', type=str,
                       help='Draw fault line using specified GMT lonlat file.')

@@ -15,6 +15,7 @@ import warnings  # suppress UserWarning from matplotlib
 warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -530,6 +531,15 @@ def plot_slice(ax, data, metadata, inps):
         if inps.coastline:
             vprint(f'draw coast line with resolution: {inps.coastline}')
             ax.coastlines(resolution=inps.coastline, linewidth=inps.coastline_linewidth)
+
+        if inps.river:
+            vprint(f'draw river with resolution: {inps.river}')
+            river = cfeature.NaturalEarthFeature(
+                'physical', 'rivers_lake_centerlines', inps.river,
+                edgecolor=cfeature.COLORS['water'],
+                facecolor='none',
+            )
+            ax.add_feature(river)
 
         # Plot DEM
         if inps.dem_file:
