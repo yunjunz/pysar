@@ -28,6 +28,8 @@ Hierarchy of sub-modules within MintPy. Level _N_ modules depends on level _N-1_
     /simulation
         fractal
 ------------------ level 1 --------------------
+    /geometry
+        dem           (objects/progress)
     /objects
         conncomp      (objects/ramp)
         ionex         (objects/ptime, utils/map)
