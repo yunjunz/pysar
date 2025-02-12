@@ -14,6 +14,7 @@ SENSOR_NAME_VARIATION = {
     'alos'  : ['alos', 'alos1', 'palsar', 'palsar1'],
     'alos2' : ['alos2', 'palsar2'],
     'alos4' : ['alos4', 'palsar3'],
+    'bio'   : ['bio', 'biomass'],
     'csk'   : ['csk', 'csk1', 'csk2', 'csk3', 'csk4', 'cos', 'cosmo', 'cosmoskymed'],
     'env'   : ['env', 'envisat', 'asar'],
     'ers'   : ['ers', 'ers1', 'ers2', 'ers12'],
@@ -623,6 +624,28 @@ NISAR_L = {
 }
 
 
+##--------------------  P-band  --------------------##
+
+# Biomass
+# https://www.eoportal.org/satellite-missions/biomass
+# Zhu et al. (2024) at https://doi.org/10.13203/j.whugis20240220
+# swath width ~= 50e3  # m
+BIOMASS = {
+    # orbit
+    'altitude'                   : 666e3,     # m, mean value
+    'orbit_inclination'          : 98,        # deg
+    'repeat_cycle'               : 3,         # day
+    # sar / antenna
+    'carrier_frequency'          : 435e6,     # Hz, 70 cm wavelength
+    'antenna_length'             : 12,        # m
+    'pulse_repetition_frequency' : 2000,      # Hz, 2000~4000
+    'chirp_bandwidth'            : 6e6,       # Hz
+    'range_pixel_size'           : 25,        # m
+    'azimuth_pixel_size'         : 8,         # m
+}
+
+
+
 SENSOR_DICT = {
     # X-band
     'tsx'   : TSX,
@@ -647,4 +670,6 @@ SENSOR_DICT = {
     'lt1'   : LT1,
     'uav'   : UAV_L,
     'ni'    : NISAR_L,
+    # P-band
+    'bio'   : BIOMASS,
 }
